@@ -1,93 +1,79 @@
-# 用C++做一个简单的员工管理系统 — 新手入门教程
+---
+layout: post
+title: "CppEmployeeSystem：简单的员工管理系统示例"
+date: 2025-02-22 13:39:28 +0900
+categories: jekyll update
+---
 
-## 为什么做这个项目？
+# CppEmployeeSystem — 简单的的员工管理系统示例
 
-作为初学者，编程最好的学习方式就是写“实战项目”。这个员工管理系统就是一个很好的练习。它帮助我们理解：  
-- 如何用C++连接数据库  
-- 如何设计简单的面向对象程序  
-- 如何通过配置文件管理程序设置
+这是一个用 C++ 写的简单员工管理系统，演示了怎么连接 PostgreSQL 数据库，做增删改查操作。
 
-## 项目主要做什么？
+## 主要功能
 
-这个系统能帮你完成：  
-- 添加员工信息  
-- 查询员工列表  
-- 更新员工资料  
-- 删除员工数据
+- 添加新员工
+- 查看所有员工
+- 通过员工ID查找员工
+- 修改员工信息
+- 删除员工
 
-想象一下，你是一个公司的人事，需要管理员工信息，这个程序就是你的工具。
+## 需要准备的环境
 
-## 用到哪些技术？
+- 支持 C++26 的编译器（建议用 GCC 13 或更高）
+- PostgreSQL 数据库
+- libpqxx 库（PostgreSQL C++客户端库）
+- CMake 工具（版本 3.10 或更高）
 
-- **C++**：程序的主要开发语言，学习基本语法和类的用法。  
-- **PostgreSQL数据库**：存储员工信息，学会基本的数据库操作。  
-- **libpqxx库**：C++连接PostgreSQL的工具。  
-- **JSON配置文件**：把数据库连接参数放到外部文件，程序启动时读取，方便修改。
+## 怎么编译运行？
 
-## 程序结构简介
+1. 先把项目克隆到本地：
 
-- **Employee类**：定义了员工信息（名字、部门、职位、工资、入职时间）。  
-- **EmployeeService类**：实现和数据库交互的操作，比如增删改查。  
-- **main函数**：程序入口，调用服务添加员工并输出结果。
+```bash
+git clone https://github.com/你的用户名/CppEmployeeSystem.git
+cd CppEmployeeSystem
 
-## 关键代码示例
+    创建构建目录，生成编译文件并编译：
 
-这是给数据库添加员工的方法：
+mkdir build
+cd build
+cmake ..
+make
 
-```cpp
-void EmployeeService::addEmployee(const Employee& emp) {
-    pqxx::work txn(db);
-    txn.exec_params(
-        "INSERT INTO employee (name, department, position, salary, hire_date) VALUES ($1, $2, $3, $4, $5)",
-        emp.getName(), emp.getDepartment(), emp.getPosition(), emp.getSalary(), emp.getHireDate()
-    );
-    txn.commit();
+    运行程序：
+
+./CppEmployeeSystem
+
+配置说明
+
+程序的数据库连接信息放在根目录的 config.json 文件里，格式像这样：
+
+{
+  "connection_string": "host=localhost port=5432 dbname=employees user=postgres password=你的密码"
 }
 
-这段代码做了什么？
+把 "你的密码" 改成你自己的 PostgreSQL 数据库密码。
+代码接口介绍
 
-    pqxx::work txn(db); 开启一个事务
+    添加员工
 
-    用 exec_params 执行插入语句，并传入员工信息
+service.addEmployee(Employee(...));
 
-    txn.commit(); 提交事务，把数据保存到数据库
+查看所有员工
 
-运行效果
+auto list = service.getAllEmployees();
 
-在终端运行程序后，你会看到：
+根据 ID 查找员工
 
-添加员工成功！
+auto emp = service.getEmployeeById(id);
 
-说明员工信息已经存入数据库。
-你可以这样开始
+修改员工信息
 
-    安装 PostgreSQL 和 libpqxx
+service.updateEmployee(Employee(...));
 
-    创建数据库和员工表
+删除员工
 
-    准备好配置文件 config.json，写入数据库连接信息
+    service.deleteEmployee(id);
 
-    编译并运行程序
+许可证
 
-学习收获
-
-    学会了如何让C++程序和数据库“对话”
-
-    了解了面向对象设计的基础用法
-
-    学会了用JSON配置文件简化程序设置
-
-后续提升建议
-
-    试着加入查询和删除功能
-
-    学习异步编程，让程序更高效
-
-    把程序做成图形界面，更易用
-
-    尝试用Lua脚本做业务逻辑扩展
-
-希望这篇简单的教程，能帮你入门C++和数据库编程！加油~
-
-作者： 井文龙
-日期： 2025-06-18
+本项目使用 BSD 2-Clause 许可证，欢迎大家自由使用和修改。
